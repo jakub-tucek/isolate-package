@@ -43,6 +43,7 @@ type CatalogSnapshots = Record<
 
 export async function generatePnpmLockfile({
   workspaceRootDir,
+  lockfileRootDir = getPnpmLockfileDir(workspaceRootDir),
   targetPackageDir,
   isolateDir,
   internalDepPackageNames,
@@ -53,6 +54,7 @@ export async function generatePnpmLockfile({
   patchedDependencies,
 }: {
   workspaceRootDir: string;
+  lockfileRootDir?: string;
   targetPackageDir: string;
   isolateDir: string;
   internalDepPackageNames: string[];
@@ -76,8 +78,6 @@ export async function generatePnpmLockfile({
 
   try {
     const isRush = isRushWorkspace(workspaceRootDir);
-
-    const lockfileRootDir = getPnpmLockfileDir(workspaceRootDir);
 
     const lockfile = await readPnpmLockfile(lockfileRootDir, majorVersion);
 

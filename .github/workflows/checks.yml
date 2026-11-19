@@ -58,3 +58,9 @@ jobs:
 
       - name: Run ${{ matrix.command }}
         run: pnpm ${{ matrix.command }}
+
+      - name: Test pnpm v13 lockfiles
+        if: matrix.command == 'test'
+        env:
+          TEST_PNPM_V13: "1"
+        run: npm exec --yes --package=pnpm@12.20.0 -- node node_modules/vitest/vitest.mjs run src/isolate-pnpm-v13.integration.test.ts

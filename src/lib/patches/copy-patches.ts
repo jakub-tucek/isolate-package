@@ -22,6 +22,7 @@ import { collectInstalledNamesFromPnpmLockfile } from "./collect-installed-names
 
 export async function copyPatches({
   workspaceRootDir,
+  pnpmLockfileDir,
   targetPackageDir,
   targetPackageManifest,
   packagesRegistry,
@@ -30,6 +31,7 @@ export async function copyPatches({
   includeDevDependencies,
 }: {
   workspaceRootDir: string;
+  pnpmLockfileDir?: string;
   targetPackageDir: string;
   targetPackageManifest: PackageManifest;
   packagesRegistry: PackagesRegistry;
@@ -118,6 +120,7 @@ export async function copyPatches({
     packageManagerName === "pnpm"
       ? await collectInstalledNamesFromPnpmLockfile({
           workspaceRootDir,
+          ...(pnpmLockfileDir ? { lockfileDir: pnpmLockfileDir } : {}),
           targetPackageDir,
           internalDepPackageNames,
           packagesRegistry,
@@ -155,7 +158,9 @@ export async function copyPatches({
    */
   const lockfilePatchResult =
     packageManagerName === "pnpm"
-      ? await readLockfilePatchedDependencies(workspaceRootDir)
+      ? await readLockfilePatchedDependencies(
+          pnpmLockfileDir ?? getPnpmLockfileDir(workspaceRootDir),
+        )
       : undefined;
 
   const patchFilesToCopy: {
@@ -232,14 +237,11 @@ export async function copyPatches({
  * for a second reason as well: `@pnpm/lockfile.fs` migrates the object form to
  * a bare hash while reading, so only the v8 reader still yields an object.
  */
-async function readLockfilePatchedDependencies(
-  workspaceRootDir: string,
-): Promise<{
+async function readLockfilePatchedDependencies(lockfileDir: string): Promise<{
   patchedDependencies?: Record<string, PatchFile | string>;
   readError?: unknown;
 }> {
   const { majorVersion } = usePackageManager();
-  const lockfileDir = getPnpmLockfileDir(workspaceRootDir);
 
   const result = await readPnpmLockfile(lockfileDir, majorVersion, {
     onFailure: "return-error",

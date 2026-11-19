@@ -18,6 +18,7 @@ import {
  */
 export async function processLockfile({
   workspaceRootDir,
+  pnpmLockfileDir,
   packagesRegistry,
   isolateDir,
   internalDepPackageNames,
@@ -28,6 +29,7 @@ export async function processLockfile({
   config,
 }: {
   workspaceRootDir: string;
+  pnpmLockfileDir?: string;
   packagesRegistry: PackagesRegistry;
   isolateDir: string;
   internalDepPackageNames: string[];
@@ -87,6 +89,7 @@ export async function processLockfile({
     case "pnpm": {
       await generatePnpmLockfile({
         workspaceRootDir,
+        ...(pnpmLockfileDir ? { lockfileRootDir: pnpmLockfileDir } : {}),
         targetPackageDir,
         isolateDir,
         internalDepPackageNames,

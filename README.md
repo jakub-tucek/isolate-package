@@ -21,6 +21,10 @@ npx isolate-package isolate
 
 Run the command from the monorepo package you would like to isolate.
 
+Workspaces using pnpm's experimental `lockfile.format: v13` need pnpm 12.19
+or later on `PATH`. Isolate uses pnpm to convert a temporary copy to v9
+before pruning it. The source lockfile is unchanged.
+
 ## Documentation
 
 For full documentation visit
